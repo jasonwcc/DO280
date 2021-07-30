@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+    name: hello
+  namespace: monitor-review
+spec:
+  replicas: 20
+  strategy:
+    type: Recreate
+    recreateParams: {}
+  selector:
+    matchLabels:
+      app: hello
+      name: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+        name: hello
+    spec:
+      containers:
+      - name: hello
+        image: quay.io/redhattraining/probes-hello:v1.0
+        env:
+          - name: INIT_SLEEP_SECONDS
+            value: "30"
+        terminationMessagePath: /dev/termination-log
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3001
+            scheme: HTTP
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 3001
+            scheme: HTTP
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "2560Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello
+    name: hello
+  name: hello
+spec:
+  ports:
+  - port: 3000
+  selector:
+    name: hello
+---
+kind: Route
+apiVersion: v1
+metadata:
+  name: hello
+  labels:
+    app: hello
+    name: hello
+spec:
+  host: hello.RHT_OCP4_WILDCARD_DOMAIN
+  subdomain: ''
+  to:
+    kind: Service
+    name: hello
+    weight: 100
+  port:
+    targetPort: 3000
+  wildcardPolicy: None

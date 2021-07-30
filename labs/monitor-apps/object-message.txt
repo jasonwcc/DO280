@@ -1,0 +1,4 @@
+OBJECT                 MESSAGE
+.involvedObject.name   .message
+
+

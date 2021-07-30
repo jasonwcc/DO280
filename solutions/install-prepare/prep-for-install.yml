@@ -1,0 +1,91 @@
+---
+- name: Prep localhost to run openshift-install command
+  hosts: localhost
+  gather_facts: no
+  vars:
+    installer_version: v0.16.1
+    installer_url: https://github.com/openshift/installer/releases/download/{{ installer_version }}/openshift-install-linux-amd64
+    cli_version: 4.0.22
+    cli_url: https://mirror.openshift.com/pub/openshift-v3/clients/{{ cli_version }}/linux/oc.tar.gz
+    aws_bundle_url: https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+    bash_completion_file: /etc/bash_completion.d/oc
+    required_packages:
+      - python-boto
+
+  tasks:
+    - name: Install software
+      yum:
+        name: "{{ required_packages }}"
+        state: latest
+
+    - name: Test if AWS is already installed
+      stat:
+        path: /bin/aws
+      register: aws_result
+
+    - block:
+        - name: Download and extract AWS bundle
+          unarchive:
+            src: "{{ aws_bundle_url }}"
+            dest: /tmp/
+            remote_src: yes
+
+        - name: Run the AWS install bundle
+          command: /tmp/awscli-bundle/install -i /usr/local/aws -b /bin/aws
+
+        - name: Remove downloaded AWS resources
+          file:
+            path: /tmp/awscli-bundle
+            state: absent
+      when: aws_result.stat.exists == False
+
+    - name: Verify AWS version
+      command: aws --version
+      register: aws_version
+      changed_when: false
+
+    - name: Show AWS version
+      debug:
+        msg: "{{ aws_version.stderr }}"
+
+    - name: Download the OpenShift Installer
+      get_url:
+        url: "{{ installer_url }}"
+        dest: /usr/local/bin/openshift-install
+        owner: root
+        group: root
+        mode: 0755
+        force: yes
+
+    - name: Download the OpenShift CLI
+      unarchive:
+        src: "{{ cli_url }}"
+        dest: /usr/local/bin/
+        remote_src: yes
+        owner: root
+        group: root
+        mode: 0755
+
+#    If the oc command is eventually provided by an RPM file, comment out
+#    the task above, specify the package name in this task, and use
+#    this task to install the package.
+#    - name: Download the OpenShift CLI
+#      yum:
+#        name: PACKAGENAME
+#        state: latest
+
+    - name: Check for {{ bash_completion_file }}
+      stat:
+        path: "{{ bash_completion_file }}"
+      register: oc_completion
+
+    - name: Create {{ bash_completion_file }}
+      shell: oc completion bash > {{ bash_completion_file }}
+      when: oc_completion.stat.exists == False
+
+    - name: Create the SSH cluster key
+      user:
+        name: student
+        generate_ssh_key: true
+        ssh_key_file: .ssh/cluster-key
+        ssh_key_comment: OpenShift Cluster Key

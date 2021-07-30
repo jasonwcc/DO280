@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysqld
+  name: mysqld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysqld
+      deployment: mysqld
+  template:
+    metadata:
+      labels:
+        app: mysqld
+        deployment: mysqld
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_ROT_PASSWD
+          value: change_me
+        image: registry.access.redhat.com/rhscl/mysql-80-rhel7:8.0
+        name: mysqld
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysqld
+  name: mysqld
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mysqld
+  type: ClusterIP

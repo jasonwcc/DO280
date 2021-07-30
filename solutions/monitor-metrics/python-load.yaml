@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-load
+  labels:
+    app: python-load
+    name: python-load
+  namespace: network-ingress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-load
+      name: python-load
+  template:
+    metadata:
+      labels:
+        app: python-load
+        name: python-load
+    spec:
+      containers:
+      - image: quay.io/redhattraining/python-load:v0.1
+        name: python-load
+        resources:
+          limits:
+            cpu: "250m"
+            memory: "128Mi"

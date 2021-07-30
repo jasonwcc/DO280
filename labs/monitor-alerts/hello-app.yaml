@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+    name: hello
+  namespace: monitor-alerts
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: hello
+      name: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+        name: hello
+    spec:
+      containers:
+      - name: hello
+        image: quay.io/redhattraining/hello-nginx:v1.0
+        resources:
+          requests:
+            cpu: "8"
+            memory: "8000Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello
+    name: hello
+  name: hello
+spec:
+  ports:
+  - port: 8080
+  selector:
+    name: hello
+---
+kind: Route
+apiVersion: v1
+metadata:
+  name: hello-app
+  labels:
+    app: hello
+    name: hello
+spec:
+  # Replace the entry with the value of your wildcard domain.
+  host: hello.<RHT_OCP4_WILDCARD_DOMAIN>
+  subdomain: ''
+  to:
+    kind: Service
+    name: hello
+    weight: 100
+  port:
+    targetPort: 8080
+  wildcardPolicy: None

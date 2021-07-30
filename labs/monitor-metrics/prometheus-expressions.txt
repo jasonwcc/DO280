@@ -1,0 +1,18 @@
+#
+## Prometheus Queries
+# 
+
+# Make sure to replace '<node>' with the output of:
+# $ oc get pod <pod> -o jsonpath='{.spec.nodeName}{"\n"}'
+
+# Run the following expression to retrieve the CPU usage for the node.
+instance:node_cpu:rate:sum{instance='<node>'}
+
+# Run the following expression to retrieve the amount of available CPU for the node.
+kube_node_status_capacity_cpu_cores{node='<node>'}
+ 
+# Run the following expression to retrieve the amount of used memory.
+node_memory_Active_bytes{instance='<node>'}
+
+# Run the following expression to retrieve the amount of available memory in Gb.
+(node_memory_MemTotal_bytes{instance='<node>'})/1024/1024/1024

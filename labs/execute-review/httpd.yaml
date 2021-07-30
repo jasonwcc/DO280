@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: httpd
+  name: httpd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpd
+      deployment: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+        deployment: httpd
+    spec:
+      containers:
+      - image: registry.redhat.com/rhscl/httpd-24-rhel7:2.4
+        name: httpd
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: httpd
+  name: httpd
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: httpd
+  type: ClusterIP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: httpd
+  name: httpd
+spec:
+  rules:
+  - host: httpd.apps.cluster.domain.example.com
+    http:
+     paths:
+     - path: /
+       backend:
+        serviceName: httpd
+        servicePort: 8080
+---
