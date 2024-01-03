@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: appsec-review-cleaner
+  namespace: appsec-review
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: project-cleaner-sa
+          containers:
+            - name: project-cleaner
+              image: registry.ocp4.example.com:8443/redhattraining/do280-project-cleaner:v1.1
+              imagePullPolicy: Always
+              env:
+              - name: "PROJECT_TAG"
+                value: "appsec-review-cleaner"
+              - name: "EXPIRATION_SECONDS"
+                value: "10"

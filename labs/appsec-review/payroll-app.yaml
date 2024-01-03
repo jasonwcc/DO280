@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payroll-api
+  namespace: appsec-review
+spec:
+  selector:
+    matchLabels:
+      app: payroll-api
+  template:
+    metadata:
+      labels:
+        app: payroll-api
+    spec:
+      containers:
+        - name: payroll-api
+          image: registry.ocp4.example.com:8443/redhattraining/do280-payroll-api:1.0
+          imagePullPolicy: Always
+          resources: { }
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              port: 80
+              path: /readyz
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              port: 80
+              path: /livez
+              scheme: HTTP
+
+

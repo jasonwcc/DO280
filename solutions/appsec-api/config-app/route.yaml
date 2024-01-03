@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: config-app
+  namespace: appsec-api
+spec:
+  host: config-app-appsec-api.apps.ocp4.example.com
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: config-app
+    weight: 100
+

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maintenance
+  labels:
+    ge: appsec-prune
+    app: crictl
+data:
+  maintenance.sh: |
+    #!/bin/bash -eu
+    NODES=$(oc get nodes -o=name)
+    for NODE in ${NODES}
+    do
+      echo ${NODE}
+      oc debug ${NODE} -- \
+        chroot /host \
+          /bin/bash -euxc 'crictl images ; crictl rmi --prune'
+    done

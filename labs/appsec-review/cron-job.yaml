@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: appsec-review-cleaner
+  namespace: appsec-review
+spec:
+  schedule: CHANGE_ME
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          CHANGE_ME

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-app
+  namespace: appsec-api
+data:
+  config.yaml: |
+    application:
+      name: "config-app"
+      description: "config-app"

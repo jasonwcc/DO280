@@ -1,0 +1,44 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: CHANGE_ME
+  labels:
+    ge: appsec-prune
+    app: crictl
+spec:
+  schedule: 'CHANGE_ME'
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  suspend: false
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        ge: appsec-prune
+        app: crictl
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            ge: appsec-prune
+            app: crictl
+        spec:
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          containers:
+          - name: crictl
+            image: CHANGE_ME
+            command:
+            - CHANGE_ME
+            resources: {}
+            volumeMounts:
+            - name: scripts
+              mountPath: /opt
+          volumes:
+          - name: scripts
+            configMap:
+              name: maintenance
+              defaultMode: 0555

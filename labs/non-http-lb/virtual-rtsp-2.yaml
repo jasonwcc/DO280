@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtual-rtsp-2
+  labels:
+    app: virtual-rtsp-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtual-rtsp-2
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: virtual-rtsp-2
+    spec:
+      containers:
+      - name: virtual-rtsp-2
+        image: registry.ocp4.example.com:8443/redhattraining/virtual-rtsp:1.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8554
+        env:
+        - name: DOWNLOAD_SOURCE
+          value: "true"
+        - name: SOURCE_FORMAT
+          value: "mp4"
+        - name: SOURCE_URL
+          value: "http://materials.example.com/video/2-roundabout.mp4"
+        livenessProbe:
+          tcpSocket:
+            port: 8554
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8554
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        securityContext:
+          privileged: false
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - mountPath: /tmp
+          name: empty-dir
+      volumes:
+      - name: empty-dir
+        emptyDir:
+          sizeLimit: 1Gi
+status: {}

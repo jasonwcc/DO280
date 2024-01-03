@@ -1,0 +1,44 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: image-pruner
+  labels:
+    ge: appsec-prune
+    app: crictl
+spec:
+  schedule: '*/4 * * * *'
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  suspend: false
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        ge: appsec-prune
+        app: crictl
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            ge: appsec-prune
+            app: crictl
+        spec:
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          containers:
+          - name: crictl
+            image: registry.ocp4.example.com:8443/openshift/origin-cli:4.12
+            command:
+            - /opt/maintenance.sh
+            resources: {}
+            volumeMounts:
+            - name: scripts
+              mountPath: /opt
+          volumes:
+          - name: scripts
+            configMap:
+              name: maintenance
+              defaultMode: 0555

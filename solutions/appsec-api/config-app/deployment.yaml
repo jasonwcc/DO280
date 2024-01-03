@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-app
+  namespace: appsec-api
+  annotations:
+    configmap.reloader.stakater.com/reload: "config-app"
+spec:
+  selector:
+    matchLabels:
+      app: config-app
+  template:
+    metadata:
+      labels:
+        app: config-app
+    spec:
+      containers:
+        - name: config-app
+          image: registry.ocp4.example.com:8443/redhattraining/do280-show-config-app:1.0
+          resources: { }
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              port: 8000
+              path: /readyz
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              port: 8000
+              path: /livez
+              scheme: HTTP
+          env:
+            - name: CONFIG_FILE
+              value: /etc/show-config/config.yaml
+          volumeMounts:
+            - name: config-file
+              mountPath: /etc/show-config
+
+      volumes:
+        - name: config-file
+          configMap:
+            name: config-app
+

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: configmap-reloader
+  name: configmap-reloader
+  namespace: configmap-reloader
+spec:
+  selector:
+    matchLabels:
+      app: configmap-reloader
+  template:
+    metadata:
+      labels:
+        app: configmap-reloader
+    spec:
+      containers:
+        - image: "registry.ocp4.example.com:8443/redhattraining/do280-stakater-reloader:v0.0.125"
+          imagePullPolicy: IfNotPresent
+          name: configmap-reloader
+          env:
+            - name: KUBERNETES_NAMESPACE
+              value: appsec-api
+          ports:
+            - name: http
+              containerPort: 9091
+            - name: metrics
+              containerPort: 9090
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+            timeoutSeconds: 5
+            failureThreshold: 5
+            periodSeconds: 10
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            timeoutSeconds: 5
+            failureThreshold: 5
+            periodSeconds: 10
+            successThreshold: 1
+      securityContext:
+        runAsNonRoot: true

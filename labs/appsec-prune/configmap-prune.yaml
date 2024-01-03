@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: CHANGE_ME
+  labels:
+    ge: appsec-prune
+    app: crictl
+data:
+  maintenance.sh: |
+    #!/bin/bash -eu
+    NODES=$(CHANGE_ME)
+    for NODE in ${NODES}
+    do
+      echo ${NODE}
+      oc debug ${NODE} -- \
+        chroot /host \
+          /bin/bash -euxc 'CHANGE_ME'
+    done

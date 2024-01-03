@@ -1,0 +1,18 @@
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-cleaner
+  namespace: appsec-review
+spec:
+  restartPolicy: Never
+  serviceAccountName: CHANGE_ME
+  containers:
+    - name: project-cleaner
+      image: registry.ocp4.example.com:8443/redhattraining/do280-project-cleaner:v1.1
+      imagePullPolicy: Always
+      env:
+      - name: "PROJECT_TAG"
+        value: "appsec-review-cleaner"
+      - name: "EXPIRATION_SECONDS"
+        value: "10"

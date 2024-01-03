@@ -1,0 +1,122 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ubi7
+  labels:
+    app: nginx-ubi7
+    ge: appsec-prune
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ubi7
+      ge: appsec-prune
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-ubi7
+        ge: appsec-prune
+    spec:
+      containers:
+      - name: nginx-ubi7
+        # image: registry.access.redhat.com/ubi7/nginx-118:latest
+        # image: registry.access.redhat.com/ubi7/nginx-120:latest
+        image: registry.ocp4.example.com:8443/ubi7/nginx-118:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - nginx
+        - -g
+        - "daemon off;"
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: "RuntimeDefault"
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ubi8
+  labels:
+    app: nginx-ubi8
+    ge: appsec-prune
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ubi8
+      ge: appsec-prune
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-ubi8
+        ge: appsec-prune
+    spec:
+      containers:
+      - name: nginx-ubi8
+        # image: registry.access.redhat.com/ubi8/nginx-118:latest
+        # image: registry.access.redhat.com/ubi8/nginx-120:latest
+        image: registry.ocp4.example.com:8443/ubi8/nginx-118:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - nginx
+        - -g
+        - "daemon off;"
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: "RuntimeDefault"
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ubi9
+  labels:
+    app: nginx-ubi9
+    ge: appsec-prune
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ubi9
+      ge: appsec-prune
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-ubi9
+        ge: appsec-prune
+    spec:
+      containers:
+      - name: nginx-ubi9
+        # image: registry.access.redhat.com/ubi9/nginx-120:latest
+        image: registry.ocp4.example.com:8443/ubi9/nginx-120:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - nginx
+        - -g
+        - "daemon off;"
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: "RuntimeDefault"
+status: {}
