@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limit-range
+  namespace: console-apps
+spec:
+  limits:
+    - default:
+        cpu: 500m
+        memory: 5Gi
+      defaultRequest:
+        cpu: 10m
+        memory: 100Mi
+      type: Container

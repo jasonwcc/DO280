@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+  namespace: network-review
+spec:
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: registry.ocp4.example.com:8443/redhattraining/do280-product:1.0
+          imagePullPolicy: Always
+          env:
+            - name: TLS_ENABLED
+              value: "false"
+            - name: STOCK_URL
+              value: "http://stock.network-review.svc"
+          resources: {}
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /readyz
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /livez
+              scheme: HTTP
+
+

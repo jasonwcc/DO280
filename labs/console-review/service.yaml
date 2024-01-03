@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: famous-quotes
+  namespace: console-review
+spec:
+  selector:
+    app: famous-quotes
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

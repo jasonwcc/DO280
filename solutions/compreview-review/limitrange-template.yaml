@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+ name: workshop
+ namespace: template-test
+spec:
+ limits:
+   - default:
+        cpu: 1
+        memory: 750Mi
+     defaultRequest:
+        cpu: 500m
+        memory: 250Mi
+     type: Container

@@ -1,39 +1,38 @@
-BaseLab 
-appsec-api 
-appsec-prune 
-appsec-review 
-appsec-scc 
-auth-providers 
-auth-rbac 
-auth-review 
-compreview-apps 
-compreview-package 
-compreview-review 
-console-admin 
-console-metrics 
-console-review 
-console-workloads 
-declarative-kustomize 
-declarative-manifests 
-declarative-review 
-foo-bar 
-network-ingress 
-network-policy 
-network-review 
-network-svccerts 
-non-http-lb 
-non-http-multus 
-non-http-review 
-operators-cli 
-operators-review 
-operators-web 
-packaged-charts 
-packaged-review 
-packaged-templates 
-selfservice-projtemplate 
-selfservice-quotas 
-selfservice-ranges 
-selfservice-review 
-updates-api 
-updates-olm 
- 
+#BaseLab 
+#lab start appsec-api 
+#lab start appsec-prune
+#lab start appsec-review 
+#lab start auth-providers 
+lab start appsec-scc 
+lab start auth-rbac 
+lab start auth-review 
+lab start compreview-apps 
+lab start compreview-package 
+lab start compreview-review 
+lab start console-admin 
+lab start console-metrics 
+lab start console-review 
+lab start console-workloads 
+lab start declarative-kustomize 
+lab start declarative-manifests 
+lab start declarative-review 
+lab start foo-bar 
+lab start network-ingress 
+lab start network-policy 
+lab start network-review 
+lab start network-svccerts 
+lab start non-http-lb 
+lab start non-http-multus 
+lab start non-http-review 
+lab start operators-cli 
+lab start operators-review 
+lab start operators-web 
+lab start packaged-charts 
+lab start packaged-review 
+lab start packaged-templates 
+lab start selfservice-projtemplate 
+lab start selfservice-quotas 
+lab start selfservice-ranges 
+lab start selfservice-review 
+lab start updates-api 
+lab start updates-olm 

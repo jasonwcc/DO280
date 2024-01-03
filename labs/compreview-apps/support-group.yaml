@@ -1,0 +1,6 @@
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: workshop-support
+users:
+- do280-support

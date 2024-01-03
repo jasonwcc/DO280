@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+ name: workshop-quota-template
+ namespace: workshop-template
+spec:
+  CHANGE_ME

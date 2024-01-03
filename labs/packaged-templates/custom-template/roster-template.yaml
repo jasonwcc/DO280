@@ -1,0 +1,134 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: roster-template
+  annotations:
+    description: "Example application for DO280 Practice exercise"
+    iconClass: "icon-golang"
+    tags: "golang,do280"
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${DATABASE_SERVICE_NAME}
+  stringData:
+    database-name: ${MYSQL_DATABASE}
+    database-password: ${MYSQL_PASSWORD}
+    database-user: ${MYSQL_USER}
+    database-service: ${DATABASE_SERVICE_NAME}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: ${APPNAME}
+    labels:
+      app: ${APPNAME}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ${APPNAME}
+    template:
+      metadata:
+        labels:
+          app: ${APPNAME}
+      spec:
+        containers:
+        - image: ${IMAGE}
+          name: ${APPNAME}-image
+          ports:
+          - containerPort: 9090
+            protocol: TCP
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: ${DATABASE_SERVICE_NAME}
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: ${DATABASE_SERVICE_NAME}
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: ${DATABASE_SERVICE_NAME}
+            - name: DATABASE_SERVICE_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-service
+                  name: ${DATABASE_SERVICE_NAME}
+            - name: INIT_DB
+              value: ${INIT_DB}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            seccompProfile:
+              type: "RuntimeDefault"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${APPNAME}
+    name:  ${APPNAME}
+  spec:
+    type: ClusterIP
+    selector:
+      app: ${APPNAME}
+    ports:
+    - port: 9090
+      protocol: TCP
+      targetPort: 9090
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    labels:
+      app: ${APPNAME}
+    name: ${APPNAME}
+  spec:
+    host: ${APPNAME}-${NAMESPACE}.apps.ocp4.example.com
+    port:
+      targetPort: 9090
+    to:
+      kind: Service
+      name: ${APPNAME}
+      weight: 100
+
+parameters:
+- description: The image used for the pod deployed by this template.
+  name: IMAGE
+  value: registry.ocp4.example.com:8443/redhattraining/do280-roster:v1
+- description: The name used for the resources
+  name: APPNAME
+  value: do280-roster
+- description: The project name for the deployment
+  name: NAMESPACE
+  value: packaged-templates
+- description: The name of the OpenShift Service exposed for the databse
+  displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: mysql
+- description: Username for the MYSQL user that will be used for accessing the database
+  displayName: MySQL Connection Username
+  name: MYSQL_USER
+  required: true
+- description: Passord for the MySQL connection user
+  displayName: MySQL Connection Password
+  name: MYSQL_PASSWORD
+  required: true
+- description: Name of the MySQL database accessed
+  displayName: MySQL Database Name
+  name: MYSQL_DATABASE
+  required: true
+  value: sampledb
+- description: Set to "true" to have the application initialize the database
+  displayName: Initialize the MySQL database flag
+  name: INIT_DB
+  required: true
+  value: "False"

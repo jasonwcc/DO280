@@ -1,0 +1,13 @@
+apiVersion: compliance.openshift.io/v1alpha1
+profiles:
+  - apiGroup: compliance.openshift.io/v1alpha1
+    name: rhcos4-moderate
+    kind: Profile
+settingsRef:
+  apiGroup: compliance.openshift.io/v1alpha1
+  name: default
+  kind: ScanSetting
+kind: ScanSettingBinding
+metadata:
+  name: nist-moderate
+  namespace: openshift-compliance

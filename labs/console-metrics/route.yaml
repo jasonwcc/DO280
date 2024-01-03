@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: books
+  namespace: console-apps
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: books

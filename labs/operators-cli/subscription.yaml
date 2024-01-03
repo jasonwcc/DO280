@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: file-integrity-operator
+  namespace: CHANGE_ME
+spec:
+  channel: CHANGE_ME
+  installPlanApproval: CHANGE_ME
+  name: CHANGE_ME
+  source: CHANGE_ME
+  sourceNamespace: openshift-marketplace

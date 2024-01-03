@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: postgresql
+  namespace: openshift-operators
+spec:
+  name: postgresql
+  channel: CHANGE_ME
+  source: CHANGE_ME
+  sourceNamespace: CHANGE_ME

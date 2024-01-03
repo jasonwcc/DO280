@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: stock-ingress-policy
+  namespace: network-review
+spec:
+  podSelector:
+    matchLabels:
+      app: stock
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: product
+      ports:
+        - protocol: TCP
+          port: 8085

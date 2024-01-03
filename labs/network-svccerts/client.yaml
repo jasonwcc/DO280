@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+spec:
+  containers:
+    - name: client
+      image: registry.ocp4.example.com:8443/redhattraining/hello-world-nginx
+      resources: {}
+      volumeMounts:
+        - mountPath: /etc/pki/ca-trust/extracted/pem
+          name: CHANGE_ME
+  volumes:
+    - configMap:
+        defaultMode: 420
+        name: CHANGE_ME
+        items:
+          - key: CHANGE_ME
+            path: tls-ca-bundle.pem
+      name: CHANGE_ME

@@ -1,0 +1,17 @@
+#	~/.config/vlc/vlcrc
+
+###  vlc 3.0.18
+### lines beginning with a '#' character are comments
+
+[qt] # Qt interface
+
+# Ask for network policy at start (boolean)
+qt-privacy-ask=0
+
+[core] # core program
+
+# Allow metadata network access (boolean)
+metadata-network-access=1
+
+# Video output module (string)
+vout=xcb_x11

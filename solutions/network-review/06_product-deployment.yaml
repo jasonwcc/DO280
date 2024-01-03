@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+  namespace: network-review
+spec:
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: registry.ocp4.example.com:8443/redhattraining/do280-product:1.0
+          resources: { }
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /readyz
+              scheme: HTTPS
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /livez
+              scheme: HTTPS
+          env:
+            - name: CERT_CA
+              value: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            - name: TLS_ENABLED
+              value: "true"
+            - name: STOCK_URL
+              value: "https://stock.network-review.svc"
+          volumeMounts:
+            - name: passthrough-cert
+              mountPath: /etc/pki/product/
+            - name: trusted-ca
+              mountPath: /etc/pki/ca-trust/extracted/pem
+
+      volumes:
+        - name: passthrough-cert
+          secret:
+            defaultMode: 420
+            secretName: passthrough-cert
+        - name: trusted-ca
+          configMap:
+            defaultMode: 420
+            name: service-ca
+            items:
+              - key: service-ca.crt
+                path: tls-ca-bundle.pem
+

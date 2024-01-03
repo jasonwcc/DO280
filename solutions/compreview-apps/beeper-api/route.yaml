@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: product-https
+  namespace: network-review
+spec:
+  host: product.apps.ocp4.example.com
+  port:
+    targetPort: 8080
+  tls:
+    termination: passthrough
+  to:
+    kind: Service
+    name: product
+    weight: 100
+  wildcardPolicy: None

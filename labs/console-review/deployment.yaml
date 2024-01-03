@@ -1,0 +1,30 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: famous-quotes
+  namespace: console-review
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: famous-quotes
+  template:
+    metadata:
+      labels:
+        app: famous-quotes
+    spec:
+      containers:
+        - name: famous-quotes
+          image: 'registry.ocp4.example.com:8443/redhattraining/famous-quotes:2.1'
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          env:
+            - name: QUOTES_HOSTNAME
+              value: database
+            - name: QUOTES_USER
+              value: famous
+            - name: QUOTES_DATABASE
+              value: famous
+            - name: QUOTES_PASSWORD
+              value: famous

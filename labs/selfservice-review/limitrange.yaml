@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: CHANGE_ME
+  namespace: CHANGE_ME
+spec:
+  limits:
+  - min:
+      memory: CHANGE_ME
+    defaultRequest:
+      memory: CHANGE_ME
+    default:
+      memory: CHANGE_ME
+    max:
+      memory: CHANGE_ME
+    type: Container

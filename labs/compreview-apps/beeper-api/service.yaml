@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: beeper-api
+  namespace: workshop-support
+spec:
+  selector:
+    app: CHANGE_ME
+  ports:
+    - port: CHANGE_ME
+      targetPort: CHANGE_ME
+      name: https
+

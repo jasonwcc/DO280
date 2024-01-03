@@ -1,0 +1,83 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: project-request
+objects:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    name: ${PROJECT_NAME}
+    labels:
+      workshop: ${PROJECT_NAME}
+  spec: {}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${PROJECT_ADMIN_USER}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    annotations:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  spec:
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    annotations:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  spec:
+    limits:
+    - default:
+        cpu: 500m
+        memory: 500Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 250Mi
+      max:
+        cpu: 750m
+        memory: 750Mi
+      type: Container
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    annotations:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  spec:
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            workshop: ${PROJECT_NAME}
+      - namespaceSelector:
+          matchLabels:
+            policy-group.network.openshift.io/ingress: ""
+    podSelector: {}
+    policyTypes:
+    - Ingress
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER

@@ -1,0 +1,157 @@
+apiVersion: v1
+items:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    name: network-svccerts
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: tls-conf
+  data:
+    tls.conf: |-
+      server {
+          listen       8443 ssl http2 default_server;
+          listen       [::]:8443 ssl http2 default_server;
+          server_name  _;
+          root         /usr/share/nginx/html;
+
+          ssl_certificate "/etc/pki/nginx/server.crt";
+          ssl_certificate_key "/etc/pki/nginx/private/server.key";
+          ssl_session_cache shared:SSL:1m;
+          ssl_session_timeout  10m;
+          ssl_ciphers PROFILE=SYSTEM;
+          ssl_prefer_server_ciphers on;
+
+          # Load configuration files for the default server block.
+          include /etc/nginx/default.d/*.conf;
+
+          location / {
+          }
+
+          error_page 404 /404.html;
+              location = /40x.html {
+          }
+
+          error_page 500 502 503 504 /50x.html;
+              location = /50x.html {
+          }
+      }
+- apiVersion: image.openshift.io/v1
+  generation: 0
+  image:
+    dockerImageLayers: null
+    dockerImageMetadata: null
+    metadata:
+      creationTimestamp: null
+  kind: ImageStreamTag
+  lookupPolicy:
+    local: false
+  metadata:
+    annotations:
+      openshift.io/imported-from: registry.ocp4.example.com:8443/redhattraining/hello-world-nginx
+    creationTimestamp: null
+    labels:
+      app: server
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: server
+    name: server:latest
+  tag:
+    annotations: null
+    from:
+      kind: DockerImage
+      name: registry.ocp4.example.com:8443/redhattraining/hello-world-nginx
+    generation: null
+    importPolicy: {}
+    name: latest
+    referencePolicy:
+      type: ""
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"server:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"server\")].image"}]'
+    creationTimestamp: null
+    labels:
+      app: server
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: server
+    name: server
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        deployment: server
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deployment: server
+      spec:
+        containers:
+        - image: ' '
+          readinessProbe:
+            tcpSocket:
+              port: 8443
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8443
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          name: server
+          ports:
+          - containerPort: 8443
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 200m
+              memory: 400Mi
+          volumeMounts:
+            - name: tls-conf
+              mountPath: /etc/nginx/conf.d/
+        volumes:
+          - name: tls-conf
+            configMap:
+              name: tls-conf
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: server
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: server
+    name: server
+  spec:
+    ports:
+    - name: 8443-tcp
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      deployment: server
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: no-ca-bundle
+  spec:
+    containers:
+      - name: no-ca-bundle
+        image: registry.ocp4.example.com:8443/redhattraining/hello-world-nginx
+        resources: {}
+kind: List
+metadata: {}
+

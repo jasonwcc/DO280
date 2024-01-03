@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: workshop-support
+  namespace: workshop-support
+spec:
+  hard:
+    limits.cpu: "4"
+    limits.memory: 4Gi
+    requests.cpu: 3500m
+    requests.memory: 3Gi

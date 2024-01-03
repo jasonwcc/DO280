@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: books
+  namespace: console-apps
+spec:
+  selector:
+    app: books
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

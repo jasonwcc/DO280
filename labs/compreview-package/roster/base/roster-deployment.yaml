@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: roster
+  name: roster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: roster
+  template:
+    metadata:
+      labels:
+        app: roster
+    spec:
+      containers:
+      - image: registry.ocp4.example.com:8443/redhattraining/do280-roster:v1
+        name: do280-roster
+        envFrom:
+        - configMapRef:
+            name: roster
+        - secretRef:
+            name: roster
+        ports:
+        - containerPort: 9090
+          protocol: TCP

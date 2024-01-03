@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock
+  namespace: network-review
+spec:
+  selector:
+    app: stock
+  ports:
+    - port: 80
+      targetPort: 8085
+      name: http

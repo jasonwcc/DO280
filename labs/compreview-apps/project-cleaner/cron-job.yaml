@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: project-cleaner
+  namespace: workshop-support
+spec:
+  schedule: CHANGE_ME
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          CHANGE_ME

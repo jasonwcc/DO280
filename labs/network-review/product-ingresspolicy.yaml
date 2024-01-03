@@ -1,0 +1,7 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: product-ingress-policy
+  namespace: network-review
+spec:
+  CHANGE_ME

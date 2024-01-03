@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: beeper-api
+  namespace: workshop-support
+spec:
+  podSelector: CHANGE_ME
+  ingress:
+    - from:
+        CHANGE_ME
+      ports:
+        CHANGE_ME

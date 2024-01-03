@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-ca
+  namespace: network-review
+  annotations:
+    CHANGE_ME
+data: {}

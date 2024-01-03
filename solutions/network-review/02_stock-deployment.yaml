@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock
+  namespace: network-review
+spec:
+  selector:
+    matchLabels:
+      app: stock
+  template:
+    metadata:
+      labels:
+        app: stock
+    spec:
+      containers:
+        - name: stock
+          image: registry.ocp4.example.com:8443/redhattraining/do280-product-stock:1.0
+          imagePullPolicy: Always
+          resources: { }
+          ports:
+            - containerPort: 8085
+          readinessProbe:
+            httpGet:
+              port: 8085
+              path: /readyz
+              scheme: HTTPS
+          livenessProbe:
+            httpGet:
+              port: 8085
+              path: /livez
+              scheme: HTTPS
+          env:
+            - name: TLS_ENABLED
+              value: "true"
+          volumeMounts:
+            - name: stock-service-cert
+              mountPath: /etc/pki/stock/
+      volumes:
+        - name: stock-service-cert
+          secret:
+            defaultMode: 420
+            secretName: stock-service-cert
+

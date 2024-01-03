@@ -1,0 +1,110 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exoplanets
+  labels:
+    app: exoplanets
+data:
+  DB_HOST: database
+  DB_PORT: "5432"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: exoplanets
+  labels:
+    app: exoplanets
+stringData:
+  DB_NAME: database
+  DB_USER: user
+  DB_PASSWORD: password
+  DB_ADMIN_PASSWORD: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exoplanets
+  labels:
+    app: exoplanets
+  annotations:
+    template.alpha.openshift.io/wait-for-ready: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exoplanets
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: exoplanets
+      labels:
+        app: exoplanets
+    spec:
+      containers:
+      - name: exoplanets
+        image: registry.ocp4.example.com:8443/redhattraining/exoplanets:v1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: exoplanets
+        - secretRef:
+            name: exoplanets
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 30
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 10
+          timeoutSeconds: 3
+        resources:
+          limits:
+            memory: 1Gi
+        securityContext:
+          privileged: false
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: exoplanets
+  labels:
+    app: exoplanets
+  annotations:
+    description: Exposes and load balances the application pods
+    service.alpha.openshift.io/dependencies: '[{"kind": "Service", "name": "database"}]'
+spec:
+  selector:
+    app: exoplanets
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: exoplanets
+  labels:
+    app: exoplanets
+spec:
+  host: ""
+  to:
+    kind: Service
+    name: exoplanets

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: console-apps
+  name: hello-world
+  annotations: {}
+spec:
+  selector:
+    matchLabels:
+      app: hello-world
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+        - name: container
+          image: registry.ocp4.example.com:8443/redhattraining/hello-world-nginx:v1.0
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env: []
+      imagePullSecrets: []
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  paused: false
